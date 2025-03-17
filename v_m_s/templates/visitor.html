@@ -1,0 +1,73 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitor Management</title>
+    <link rel="stylesheet" href="{% static 'visitor.css' %}">
+</head>
+<body>
+    <main class="dashboard-main">
+        <h1>Visitor Management</h1>
+
+        <!-- Visitor Registration Form -->
+        <div class="form-container">
+            <h2>Register Visitor</h2>
+            <form id="visitor-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Register Visitor</button>
+            </form>
+        </div>
+
+        <!-- Visitor List -->
+        <h2>Current Visitors</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Purpose</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    <th>Badge</th> <!-- New column for badge download -->
+                </tr>
+            </thead>
+            <tbody id="visitor-list">
+                {% for visitor in visitors %}
+                <tr>
+                    <td>{{ visitor.full_name }}</td>
+                    <td>{{ visitor.phone_number }}</td>
+                    <td>{{ visitor.purpose_of_visit }}</td>
+                    <td>{{ visitor.status }}</td>
+                    <td>
+                        <a href="{% url 'VMS:edit_visitor' visitor.id %}">Edit</a>
+                        <a href="{% url 'VMS:delete_visitor' visitor.id %}">Delete</a>
+                    </td>
+                    <td>
+                        <!-- Link to download the badge -->
+                        <a href="{% url 'VMS:download_badge' visitor.id %}" download>Download Badge</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+
+    <!-- Display messages (e.g., success or error messages) -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}"{% endif %}>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- <script src="{% static 'visitor.js' %}" type="text/javascript"></script> -->
+</body>
+</html>
+{% endblock %}

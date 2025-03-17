@@ -1,0 +1,222 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitor Dashboard</title>
+    <style>
+        /* General Page Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Dashboard Container */
+        .visitor-dashboard {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading */
+        .visitor-dashboard h2 {
+            color: #6a0dad;
+            margin-bottom: 20px;
+        }
+
+        /* Cards */
+        .card {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            color: #6a0dad;
+            margin-bottom: 15px;
+        }
+
+        /* Form Fields */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: #6a0dad;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #590cb4;
+        }
+
+        /* QR Code Container */
+        .qr-code-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .qr-code-container img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Logout Button */
+        #logout {
+            background-color: #ff4d4d;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #logout:hover {
+            background-color: #e60000;
+        }
+    </style>
+</head>
+<body>
+    <div class="visitor-dashboard">
+        <h2>Visitor Dashboard</h2>
+
+        <!-- Display messages -->
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- Download Badge Button (Visible only for logged-in visitors) -->
+        {% if request.user.is_authenticated and request.user.role == 'visitor' and visitor %}
+            <div class="card">
+                <h3>Download Your Badge</h3>
+                <a href="{% url 'VMS:download_badge' visitor.id %}" class="btn-primary">Download Badge</a>
+            </div>
+        {% endif %}
+
+        <!-- Check Pre-Registration -->
+        <div class="card">
+            <h3>Check Pre-Registration Status</h3>
+            <form id="check-pre-registration-form" method="POST" action="{% url 'VMS:check_pre_registration' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="check-email">Enter your email:</label>
+                    <input type="email" name="email" id="check-email" placeholder="example@example.com" required>
+                </div>
+                <button type="submit" class="btn-primary">Check Status</button>
+            </form>
+            <div id="pre-registration-result"></div>
+        </div>
+
+        <!-- New Visitor Registration -->
+        <div class="card">
+            <h3>New Visitor Registration</h3>
+            <form id="visitor-form" method="POST" action="{% url 'VMS:visitor_dashboard' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="visitor-name">Full Name:</label>
+                    <input type="text" name="name" id="visitor-name" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="visitor-email">Email:</label>
+                    <input type="email" name="email" id="visitor-email" placeholder="example@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="purpose">Purpose of Visit:</label>
+                    <input type="text" name="purpose" id="purpose" placeholder="Meeting, Delivery, etc." required>
+                </div>
+                <div class="form-group">
+                    <label for="host">Host Name:</label>
+                    <input type="text" name="host" id="host" placeholder="Host's Full Name" required>
+                </div>
+                <button type="submit" name="register_visitor" class="btn-primary">Register</button>
+            </form>
+        </div>
+
+        <!-- QR Code Display -->
+        {% if visitor and visitor.qr_code %}
+        <div class="qr-code-container">
+            <h3>Your QR Code</h3>
+            <img src="{{ visitor.qr_code.url }}" alt="QR Code">
+        </div>
+        {% endif %}
+
+        <!-- Logout Button -->
+        <button id="logout" onclick="confirmLogout()">Logout</button>
+    </div>
+
+    <script>
+        // Logout confirmation
+        function confirmLogout() {
+            if (confirm("Are you sure you want to logout?")) {
+                window.location.href = "{% url 'VMS:logout' %}";
+            }
+        }
+
+        // AJAX for pre-registration check
+        document.getElementById('check-pre-registration-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch("{% url 'VMS:check_pre_registration' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('pre-registration-result');
+                if (data.registered) {
+                    resultDiv.innerHTML = `<p style="color: green;">You are pre-registered!</p>`;
+                } else if (data.error) {
+                    resultDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">You are not pre-registered.</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const resultDiv = document.getElementById('pre-registration-result');
+                resultDiv.innerHTML = `<p style="color: red;">An error occurred. Please try again.</p>`;
+            });
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Asset | Visitor & Asset System</title>
+    <link rel="stylesheet" href="{% static 'assets.css' %}">
+</head>
+<body>
+    <main class="dashboard-main">
+        <h1>Delete Asset</h1>
+
+        <!-- Confirmation Message -->
+        <div class="form-container">
+            <h2>Are you sure you want to delete this asset?</h2>
+            <p><strong>Asset Name:</strong> {{ asset.name }}</p>
+            <p><strong>Category:</strong> {{ asset.category }}</p>
+            <p><strong>Status:</strong> {{ asset.status }}</p>
+            <p><strong>Assigned To:</strong> {{ asset.assigned_to }}</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn-delete">Yes, Delete</button>
+                <a href="{% url 'VMS:assets' %}" class="btn-cancel">Cancel</a>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
+{% endblock %}

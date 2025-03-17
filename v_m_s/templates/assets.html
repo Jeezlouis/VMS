@@ -1,0 +1,65 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Management | Visitor & Asset System</title>
+    <link rel="stylesheet" href="{% static 'assets.css' %}">
+</head>
+<body>
+    <main class="dashboard-main">
+        <h1>Asset Management</h1>
+
+        <!-- Combined Asset Registration and Assignment Form -->
+        <div class="form-container">
+            <h2>Register and Assign Asset</h2>
+            <form id="asset-form" method="post">
+                {% csrf_token %}
+                {{ asset_form.as_p }}
+                <button type="submit" name="asset-form">Save Asset</button>
+            </form>
+        </div>
+
+        <!-- Asset List -->
+        <h2>Asset Records</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Asset Name</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Assigned To</th>
+                    <th>QR Code</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="asset-list">
+                {% for asset in assets %}
+                <tr>
+                    <td>{{ asset.name }}</td>
+                    <td>{{ asset.category }}</td>
+                    <td>{{ asset.status }}</td>
+                    <td>{{ asset.assigned_to }}</td>
+                    <td>
+                        {% if asset.qr_code %}
+                            <img src="{{ asset.qr_code.url }}" alt="QR Code" width="100">
+                            <br>
+                            <a href="{% url 'VMS:download_asset_qr' asset.id %}" download>Download QR Code</a>
+                        {% else %}
+                            <p>No QR Code</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'VMS:edit_asset' asset.id %}">Edit</a>
+                        <a href="{% url 'VMS:delete_asset' asset.id %}">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>
+{% endblock %}

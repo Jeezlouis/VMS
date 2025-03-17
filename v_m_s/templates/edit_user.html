@@ -1,0 +1,23 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User</title>
+    <link rel="stylesheet" href="{% static 'users.css' %}">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Edit User</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ user_form.as_p }}
+            <button type="submit">Save Changes</button>
+            <a href="{% url 'VMS:users' %}">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>
+{% endblock %}

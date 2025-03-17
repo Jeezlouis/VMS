@@ -1,0 +1,28 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Asset | Visitor & Asset System</title>
+    <link rel="stylesheet" href="{% static 'assets.css' %}">
+</head>
+<body>
+    <main class="dashboard-main">
+        <h1>Edit Asset</h1>
+
+        <!-- Edit Asset Form -->
+        <div class="form-container">
+            <h2>Edit Asset Details</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Save Changes</button>
+                <a href="{% url 'VMS:assets' %}" class="btn-cancel">Cancel</a>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
+{% endblock %}

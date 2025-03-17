@@ -1,0 +1,82 @@
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f3e7ff, #e3d5ff);
+    color: #333;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Authentication Container */
+.auth-container {
+    background: white;
+    max-width: 350px;
+    width: 90%;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 10px 30px rgba(106, 13, 173, 0.2);
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.auth-container:hover {
+    transform: translateY(-5px);
+}
+
+/* Heading */
+.auth-container h2 {
+    color: #6a0dad;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Input Fields */
+.auth-container input, 
+.auth-container select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 2px solid #6a0dad;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.auth-container input:focus, 
+.auth-container select:focus {
+    outline: none;
+    border-color: #5c0099;
+    box-shadow: 0px 0px 8px rgba(106, 13, 173, 0.3);
+}
+
+/* Button */
+.auth-container button {
+    background: #6a0dad;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.auth-container button:hover {
+    background: #5c0099;
+    box-shadow: 0px 5px 15px rgba(106, 13, 173, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .auth-container {
+        width: 100%;
+        max-width: 90%;
+    }
+}

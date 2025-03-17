@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Visitor</title>
+    <link rel="stylesheet" href="{% static 'verify_visitor.css' %}">
+</head>
+<body>
+    <main class="verify-main">
+        <h1>Verify Visitor</h1>
+
+        <div class="qr-scanner">
+            <h2>Scan Visitor QR Code</h2>
+            <input type="file" id="qr-input" accept="image/*">
+            <div id="qr-result"></div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qr-scanner/1.4.2/qr-scanner.min.js"></script>
+    <script>
+        const qrInput = document.getElementById('qr-input');
+        const qrResult = document.getElementById('qr-result');
+
+        qrInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            QrScanner.scanImage(file)
+                .then(result => {
+                    qrResult.innerHTML = `
+                        <h3>Visitor Details:</h3>
+                        <pre>${result}</pre>
+                    `;
+                })
+                .catch(error => {
+                    qrResult.innerHTML = `<p>Error scanning QR code: ${error.message}</p>`;
+                });
+        });
+    </script>
+</body>
+</html>

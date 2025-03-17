@@ -1,0 +1,130 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitor Registration</title>
+    <style>
+        /* General Page Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Registration Container */
+        .registration-container {
+            max-width: 400px;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Heading */
+        .registration-container h2 {
+            color: #6a0dad;
+            margin-bottom: 15px;
+        }
+
+        /* Form Fields */
+        .registration-container input,
+        .registration-container textarea,
+        .registration-container select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        /* Submit Button */
+        .registration-container button {
+            background-color: #6a0dad;
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .registration-container button:hover {
+            background-color: #590cb4;
+        }
+
+        /* Error Message */
+        .alert {
+            background-color: #ffcccc;
+            color: #d60000;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        /* QR Code Container */
+        .qr-code-container {
+            margin-top: 20px;
+        }
+
+        .qr-code-container img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Pre-Registration Link */
+        .pre-registration-link {
+            display: block;
+            margin-top: 15px;
+            text-decoration: none;
+            color: white;
+            background-color: #6a0dad;
+            padding: 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .pre-registration-link:hover {
+            background-color: #590cb4;
+        }
+    </style>
+</head>
+<body>
+    <div class="registration-container">
+        <h2>Visitor Registration</h2>
+
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>Please correct the errors below.</strong>
+        </div>
+        {% endif %}
+
+        <form id="visitor-form" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Register</button>
+        </form>
+
+        {% if visitor %}
+            <div class="qr-code-container">
+                <h3>Your QR Code</h3>
+                <img src="{{ visitor.qr_code_image.url }}" alt="Visitor QR Code">
+                <p>Scan this QR code to verify your registration.</p>
+            </div>
+        {% endif %}
+
+        <p>Already pre-registered? <a href="{% url 'VMS:visitor_dashboard' %}" class="pre-registration-link">Check Pre-registration</a></p>
+    </div>
+</body>
+</html>
+{% endblock %}

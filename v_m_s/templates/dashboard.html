@@ -1,0 +1,92 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Visitor & Asset Management</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <h2>Dashboard</h2>
+            <ul>
+                {% if user_role == "admin" or user_role == "employee" %}
+                    <li><a href="{% url 'VMS:visitor' %}">Visitor Management</a></li>
+                    <li><a href="{% url 'VMS:assets' %}">Asset Management</a></li>
+                {% endif %}
+
+                {% if user_role == "admin" %}
+                    <li><a href="{% url 'VMS:users' %}">User Management</a></li>
+                    <li><a href="{% url 'VMS:reports' %}">Reports</a></li>
+                {% endif %}
+
+                <li><a href="{% url 'VMS:logout' %}" id="logout">Logout</a></li>
+            </ul>
+        </nav>
+
+        <main class="dashboard-main">
+            <h1>Welcome, {{ request.user.first_name }}!</h1>
+
+            {% if user_role == "admin" or user_role == "employee" %}
+                <div class="dashboard-stats">
+                    <div class="stat-box">
+                        <h3>Total Visitors</h3>
+                        <p id="total-visitors">{{ total_visitors }}</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Active Visitors</h3>
+                        <p id="active-visitors">{{ active_visitors }}</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Total Assets</h3>
+                        <p id="total-assets">{{ total_assets }}</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Assigned Assets</h3>
+                        <p id="assigned-assets">{{ assigned_assets }}</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <h2>Recent Activities</h2>
+            <div class="activity-container">
+                <!-- Recent Visitor Check-ins -->
+                <h3>Recent Visitor Check-ins</h3>
+                <ul id="visitor-activity">
+                    {% for visitor in recent_visitors %}
+                    <li>
+                        <strong style="text-transform: capitalize;">{{ visitor.full_name }}</strong> - 
+                        {{ visitor.date_of_visit|date:"F j, Y, g:i a" }} - 
+                        Purpose: <strong style="text-transform: capitalize;">{{ visitor.purpose_of_visit }}</strong>
+                    </li>
+                    {% empty %}
+                    <li>No recent visitor check-ins.</li>
+                    {% endfor %}
+                </ul>
+
+                {% if user_role == "admin" or user_role == "employee" %}
+                <!-- Recent Asset Assignments -->
+                <h3>Recent Asset Assignments</h3>
+                <ul id="asset-activity">
+                    {% for asset in recent_assets %}
+                    <li>
+                        <strong style="text-transform: capitalize;">{{ asset.name }}</strong> - 
+                        Assigned to: <strong style="text-transform: capitalize;">{{ asset.assigned_to.username|default:"Unassigned" }}</strong> - 
+                        Status: <strong style="text-transform: capitalize;">{{ asset.status }}</strong>
+                    </li>
+                    {% empty %}
+                    <li>No recent asset assignments.</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <script src="{% static 'script.js' %}" type="text/javascript"></script>
+</body>
+</html>
+{% endblock %}

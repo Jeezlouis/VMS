@@ -1,0 +1,70 @@
+{% load static %}
+{% block content %}
+  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .welcome-container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #6a0dad;
+        }
+
+        p {
+            font-size: 16px;
+            margin: 15px 0;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-container">
+        <h1>Welcome to Visitor & Asset Management System</h1>
+        <p>Please choose an option below to proceed.</p>
+        <div class="buttons">
+            <button onclick="location.href='{% url 'VMS:visitor_registration' %}'">Register as a Visitor</button>
+            <button onclick="window.location.href='{% url 'VMS:login' %}'">
+                Login
+              </button>
+        </div>
+    </div>
+
+</body>
+</html>
+    {% endblock content %}
