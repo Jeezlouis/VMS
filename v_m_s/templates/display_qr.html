@@ -1,0 +1,22 @@
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR code</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+<h1>Visitor Registration Successful</h1>
+<p>Please present this QR code to the administrator for verification:</p>
+<img src="{{ visitor.qr_code_image.url }}" alt="Visitor QR Code">
+<p>Visitor Details:</p>
+<ul>
+    <li>Name: {{ visitor.name }}</li>
+    <li>Email: {{ visitor.email }}</li>
+    <li>Purpose: {{ visitor.purpose }}</li>
+</ul>
+</body>
+</html>
+{% endblock %}

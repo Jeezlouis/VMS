@@ -21,6 +21,7 @@
                 {% if user_role == "admin" %}
                     <li><a href="{% url 'VMS:users' %}">User Management</a></li>
                     <li><a href="{% url 'VMS:reports' %}">Reports</a></li>
+                    <li><a href="{% url 'VMS:scan_qr' %}">Scan visitor Qr-code</a></li>
                 {% endif %}
 
                 <li><a href="{% url 'VMS:logout' %}" id="logout">Logout</a></li>

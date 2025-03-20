@@ -401,6 +401,40 @@ def delete_user(request, user_id):
     messages.success(request, "User deleted successfully.")
     return redirect('VMS:users')
 
+@login_required
+def verify_visitor_qr(request):
+    if request.method == 'POST':
+        visitor_id = request.POST.get('visitor_id')  # Extract visitor ID from QR code scan
+        if visitor_id:
+            try:
+                visitor = Visitor.objects.get(id=visitor_id)
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Visitor is registered.',
+                    'visitor': {
+                        'id': visitor.id,
+                        'full_name': visitor.full_name,
+                        'email': visitor.email,
+                        'purpose_of_visit': visitor.purpose_of_visit,
+                        'status': visitor.status,
+                    }
+                })
+            except Visitor.DoesNotExist:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Visitor not found.'
+                }, status=404)
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid QR code data.'
+            }, status=400)
+    else:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid request method.'
+        }, status=405)
+
 
 @login_required
 @role_required('admin', 'employee')
@@ -670,21 +704,13 @@ def check_pre_registration(request):
 
 
 def visitor_registration(request):
-    """
-    Handle visitor pre-registration and generate a QR code.
-    """
     if request.method == 'POST':
         form = VisitorPreRegistrationForm(request.POST)
         if form.is_valid():
             visitor = form.save(commit=False)
             
             # Generate QR code data
-            qr_data = f"""
-                Visitor Name: {visitor.name}
-                Email: {visitor.email}
-                Phone: {visitor.phone_number}
-                Purpose: {visitor.purpose}
-            """
+            qr_data = f"Visitor ID: {visitor.id}\nName: {visitor.name}\nEmail: {visitor.email}\nPurpose: {visitor.purpose}"
             visitor.qr_code_data = qr_data  # Save QR code data
 
             # Generate QR code image
@@ -705,11 +731,16 @@ def visitor_registration(request):
 
             visitor.save()
             messages.success(request, "Visitor pre-registration submitted successfully!")
-            return redirect('VMS:visitor_dashboard')
+
+            # Render a template to display the QR code
+            return render(request, 'display_qr.html', {'visitor': visitor})
     else:
         form = VisitorPreRegistrationForm()
 
     return render(request, 'visitor_registration.html', {'form': form})
+
+def scan_qr(request):
+    return render(request, 'scan_qr.html')
 
 def verify_visitor(request):
     return render(request, 'verify_visitor.html')

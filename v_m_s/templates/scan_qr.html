@@ -1,0 +1,44 @@
+{% extends 'base.html' %}  <!-- Assuming you have a base template -->
+{% block content %}
+<h1>Scan Visitor QR Code</h1>
+<div id="qr-reader" style="width: 500px"></div>
+<div id="qr-reader-results"></div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+function onScanSuccess(decodedText, decodedResult) {
+    // Send the decoded text (visitor ID) to the server for verification
+    fetch('/verify-visitor-qr/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'  // Ensure CSRF protection
+        },
+        body: JSON.stringify({ visitor_id: decodedText })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById('qr-reader-results').innerHTML = `
+                <p>Visitor Found:</p>
+                <ul>
+                    <li>Name: ${data.visitor.full_name}</li>
+                    <li>Email: ${data.visitor.email}</li>
+                    <li>Purpose: ${data.visitor.purpose_of_visit}</li>
+                    <li>Status: ${data.visitor.status}</li>
+                </ul>
+            `;
+        } else {
+            document.getElementById('qr-reader-results').innerHTML = `<p>Error: ${data.message}</p>`;
+        }
+    });
+}
+
+const html5QrCode = new Html5Qrcode("qr-reader");
+html5QrCode.start(
+    { facingMode: "environment" },  // Use the rear camera
+    { fps: 10, qrbox: 250 },
+    onScanSuccess
+);
+</script>
+{% endblock %}

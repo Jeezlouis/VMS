@@ -99,7 +99,8 @@ class Visitor(models.Model):
                 box_size=10,
                 border=4,
             )
-            qr_data = f"Visitor: {self.full_name}\nEmail: {self.email}\nPurpose: {self.purpose_of_visit}"
+            # Include a unique identifier (visitor ID) in the QR code data
+            qr_data = f"Visitor ID: {self.id}\nName: {self.full_name}\nEmail: {self.email}\nPurpose: {self.purpose_of_visit}"
             qr.add_data(qr_data)
             qr.make(fit=True)
             img = qr.make_image(fill_color="black", back_color="white")
